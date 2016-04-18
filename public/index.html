@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="meanchat">
+<head>
+    <meta charset="UTF-8">
+    <title>MEAN websocket chat</title>
+    <!--Angular import fra cdn-->
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.4/angular.min.js"></script>
+
+    <!--Denne skal importeres, for at socket viker-->
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
+
+    <script type="text/javascript" src="app.js"></script>
+
+    <!--Skeleton er lidt ala bootstrap, bare mere simpelt-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css">
+
+    <!--CSS kopieret fra Jans oplæg...-->
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body ng-controller="mainController as ctrl">
+
+<form ng-hide="ctrl.haveChosenUsername">
+    <p>Choose username:</p>
+    <input type="text" ng-model="ctrl.usernameInput">
+    <button ng-click="ctrl.newuser()">SAVE!</button>
+</form>
+
+<button ng-click="ctrl.logout()" ng-disabled="ctrl.loggedOut" ng-show="ctrl.showLogout">Log out!</button>
+
+
+<ul ng-show="ctrl.showUsersAndTextInput">
+    Online users:
+    <li ng-repeat="user in ctrl.onlineusers track by $index">{{user}}</li>
+</ul>
+
+<form>
+    <div class="input-message" ng-show="ctrl.showUsersAndTextInput">
+        <input type="text" ng-model="ctrl.messageInput">
+        <button ng-click="ctrl.sendMessage()" ng-disabled="ctrl.loggedOut || ctrl.sendDisabled">Send!
+        </button>
+    </div>
+</form>
+
+
+<ul class="messages" ng-show="ctrl.showUsersAndTextInput">
+    Messages:
+    <li class="message" ng-repeat="message in ctrl.messages | reverseFilter track by $index" smooth-scroll
+        duration="500"
+        scroll-if="{{ $last }}">
+        <p>{{message}}</p>
+    </li>
+</ul>
+
+
+</body>
+</html>

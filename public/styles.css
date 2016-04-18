@@ -1,0 +1,30 @@
+body {
+    margin: 0px;
+}
+
+div.bottom {
+    position: fixed;
+    width: 100%;
+    bottom: 0px;
+}
+
+div.input-message input {
+    width: 100%;
+    font-size: 15px;
+}
+
+ul.messages {
+    list-style-type: none;
+    padding-bottom: 50px;
+}
+
+ul.messages li {
+    background-color: rgb(245, 249, 255);
+    padding: 5px 10px 5px 10px;
+    border-radius: 3px;
+}
+
+ul.messages li p {
+    padding: 0px;
+    margin: 0px;
+}
