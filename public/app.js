@@ -5,7 +5,7 @@ angular.module('meanchat', [])
         var socket = io.connect();
         return {
             on: function (eventName, callback) {
-                socket.on(eventName, function () {
+                socket.on(eventName, function () { //on = når noget modtages
                     var args = arguments;
                     $rootScope.$apply(function () {
                         callback.apply(socket, args);
@@ -13,7 +13,7 @@ angular.module('meanchat', [])
                 });
             },
             emit: function (eventName, data, callback) {
-                socket.emit(eventName, data, function () {
+                socket.emit(eventName, data, function () { //emit = når noget sendes
                     var args = arguments;
                     $rootScope.$apply(function () {
                         if (callback) {
@@ -24,32 +24,16 @@ angular.module('meanchat', [])
             }
         };
     })
+    //------------------------------------------------------------------------------------------------------
 
-    //.factory('usersFactory', function(){
-    //
-    //    var onlineusers = [];
-    //
-    //    return {
-    //        getOnlineusers: function returnOnlineUsers() {
-    //            return onlineusers;
-    //        },
-    //        addOnlineusers: function addOnlineUsers(user) {
-    //            onlineusers.push(user);
-    //        },
-    //        removeUser: function removeUser(user){
-    //            onlineusers.splice(onlineusers.indexOf(user),1);
-    //        }
-    //    };
-    //
-    //})
-
+    //Vænner arrayet om, så seneste beskeder ligger øverst.
     .filter("reverseFilter", function () {
         return function (items) {
             return items.slice().reverse(); // Create a copy of the array and reverse the order of the items
         };
     })
 
-    .controller('mainController', ['socket', '$window', function (socket, $window) {
+    .controller('mainController', ['socket', '$window', function (socket, $window) { //Socket servicen injectes
 
         var scope = this;
 
@@ -69,6 +53,7 @@ angular.module('meanchat', [])
 
         var thisUser;
 
+        //Hvis brugeren findes i localStorage
         if ($window.localStorage.username) {
             thisUser = $window.localStorage.username;
             scope.haveChosenUsername = true;
@@ -79,14 +64,15 @@ angular.module('meanchat', [])
             socket.emit('message', thisUser + " is back!");
         }
 
+        //-----------OUTGOING-----------
 
-        //newUser sendes til serveren, og gemmes i en array liste
+        //Hvis ikke brugeren findes i localStorage
         scope.newuser = function () {
 
-            $window.localStorage.username = scope.usernameInput;
-            socket.emit('newuser', scope.usernameInput);
+            $window.localStorage.username = scope.usernameInput; //username gemmes i localStorage
+            socket.emit('newuser', scope.usernameInput); //New user sendes til serveren, og gemmes i dennes array over brugere.
             thisUser = scope.usernameInput;
-            socket.emit('message', scope.usernameInput + " logged on!");
+            socket.emit('message', scope.usernameInput + " logged on!"); //Besked sendes til serveren, som sender videre til alle.
 
             scope.haveChosenUsername = true;
             scope.loggedOut = false;
@@ -95,12 +81,14 @@ angular.module('meanchat', [])
             scope.showUsersAndTextInput = true;
         };
 
+        //Log ud
         scope.logout = function () {
-            socket.emit('logout', thisUser);
+            socket.emit('logout', thisUser); //Brugeren fjernes fra arrayet.
             scope.loggedOut = true;
             socket.emit('message', thisUser + " logged out!");
-            $window.localStorage.removeItem('username');
+            $window.localStorage.removeItem('username'); //username fjernes fra localStorage
         };
+
 
         //Her sendes en besked
         scope.sendMessage = function () {
@@ -115,27 +103,21 @@ angular.module('meanchat', [])
 
             var messageWithUser = datetime + " - " + thisUser + " says: " + scope.messageInput;
 
-            socket.emit('message', messageWithUser); //Sendes til serveren, og gemmes i et array derpå.
+            socket.emit('message', messageWithUser); //Sendes til serveren, og gemmes i et array derpå. Serveren sender beskeden retur til alle.
             scope.messageInput = ''; //inputfeltet cleares.
         };
 
-        ////Når en besked modtages fra serveren, smides indholdet ind i messages-arrayet.
-        //socket.on('message', function (message) {
-        //    //scope.messages.push({
-        //    //    //Vi giver beskeden en body - den skal fanges på message.body i html'en.
-        //    //    msg: message
-        //    //});
-        //    console.log("message received and pushed!");
-        //});
 
-        socket.on('allMessages', function (messages) { //det lokale message-array opdateres hvergang en ny besked bliver sendt til serveren.
+        //-----------INCOMING-----------
+
+        socket.on('allMessages', function (messages) { //Arrayet med alle beskederne opdateres fra serveren, når der sker ændringer.
             scope.messages = messages;
             console.log("MESSAGES: " + scope.messages);
         });
 
-
+        //Når en ny userliste sendes ind fra sereren.
         socket.on('userlist', function (users) {
-            scope.onlineusers = users;
+            scope.onlineusers = users; //Opdaterer userlisten på frontend - listen sendes af serveren, hvergnag der sker ændringer.
             console.log("USERLIST: " + scope.onlineusers);
         });
 

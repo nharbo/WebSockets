@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>MEAN websocket chat</title>
+
     <!--Angular import fra cdn-->
-    <script type="text/javascript"
-            src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.4/angular.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.4/angular.min.js"></script>
 
     <!--Denne skal importeres, for at socket viker-->
-    <script type="text/javascript"
-            src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
 
     <script type="text/javascript" src="app.js"></script>
 
@@ -38,8 +37,7 @@
 <form>
     <div class="input-message" ng-show="ctrl.showUsersAndTextInput">
         <input type="text" ng-model="ctrl.messageInput">
-        <button ng-click="ctrl.sendMessage()" ng-disabled="ctrl.loggedOut || ctrl.sendDisabled">Send!
-        </button>
+        <button ng-click="ctrl.sendMessage()" ng-disabled="ctrl.loggedOut || ctrl.sendDisabled">Send!</button>
     </div>
 </form>
 

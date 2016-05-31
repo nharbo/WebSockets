@@ -6,23 +6,14 @@ var messages = [];
 
 module.exports = function (socket) {
 
-    ////Når der kommer noget ind fra en socket (on), som hedder 'message', skal denne sendes ud (emit).
-    //socket.on('message', function(message){
-    //    console.log(message);
-    //    //broadcast sender til alle, men ikke dig selv
-    //    socket.broadcast.emit('message', message);
-    //    //emit sender til dig selv.
-    //    socket.emit('message', message);
-    //});
-
+    //Når der kommer en besked ind til serveren
     socket.on('message', function (message) {
-        //broadcast('message', message);
-        messages.push(message);
-        broadcast('allMessages', messages);
-        broadcast('userlist', onlineUsers);
+        messages.push(message); //gemmer beskeden i arrayet af meddelelser.
+        broadcast('allMessages', messages); //Sender en liste med alle beskederne til frontend.
+        broadcast('userlist', onlineUsers); //Sender en opdateret liste af brugere til frontend, hvergang en ny besked kommer eller en "info besked" kommer ind.
         console.log(messages);
 
-        //SAVE TO DB-LOG
+        //----SAVE TO DB-LOG----
         var newMessage = new MsgLog({
             message: message
         });
@@ -35,43 +26,25 @@ module.exports = function (socket) {
                 console.log("Message logged in db!")
             }
         });
-        //LOG END
+        //-------LOG END-------
 
     });
 
+
+    //Når en ny bruger logger ind
     socket.on('newuser', function (user) {
-
-        //var currentdate = new Date();
-        //var datetime = currentdate.getDate() + "/"
-        //    + (currentdate.getMonth()+1)  + "/"
-        //    + currentdate.getFullYear() + " @ "
-        //    + currentdate.getHours() + ":"
-        //    + currentdate.getMinutes() + ":"
-        //    + currentdate.getSeconds();
-
-        //broadcast('newuser', user);
-        onlineUsers.push(user);
-        //broadcast('message', datetime + " - " + user + " logged on!");
-        broadcast('userlist', onlineUsers);
+        onlineUsers.push(user); //Tilføjer useren til online brugere
+        broadcast('userlist', onlineUsers); //Sender listen til frontend.
         console.log("USERS: " + onlineUsers);
     });
 
+    //Når en bruger logger ud
     socket.on('logout', function (user) {
-
-        //var currentdate = new Date();
-        //var datetime = currentdate.getDate() + "/"
-        //    + (currentdate.getMonth()+1)  + "/"
-        //    + currentdate.getFullYear() + " @ "
-        //    + currentdate.getHours() + ":"
-        //    + currentdate.getMinutes() + ":"
-        //    + currentdate.getSeconds();
-
-        //broadcast('message', datetime + " - " + user + " logged out!");
-        onlineUsers.splice(onlineUsers.indexOf(user), 1);
-        //onlineUsers.remove(user);
-        broadcast('userlist', onlineUsers);
+        onlineUsers.splice(onlineUsers.indexOf(user), 1); //fjerner brugeren i arrayet med online users
+        broadcast('userlist', onlineUsers); //Sender listen til frontend.
         console.log("USERS: " + onlineUsers);
     });
+
 
     //Vi kan lave koden dynamisk, så den bliver sendt videre, afhængigt af hvilken type vi sender med:
     function broadcast(type, payload) {
